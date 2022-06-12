@@ -14,7 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('timezones', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id_timezone');
+            $table->string('time_zone');
+            $table->string('gmt_offset');
+            $table->string('country_name');
+            $table->string('country_code');
             $table->timestamps();
         });
     }

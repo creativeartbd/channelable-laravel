@@ -14,7 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('countries', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id_country');
+            $table->string('country_name');
+            $table->string('code');
             $table->timestamps();
         });
     }

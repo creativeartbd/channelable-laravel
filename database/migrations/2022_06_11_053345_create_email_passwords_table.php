@@ -14,7 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('email_passwords', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id_email_password');
+            $table->string('email');
+            $table->string('token');
+            $table->string('type');
             $table->timestamps();
         });
     }

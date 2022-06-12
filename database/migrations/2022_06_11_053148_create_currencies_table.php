@@ -14,7 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('currencies', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id_currency');
+            $table->string('currency_name');
+            $table->string('country_code');
+            $table->string('num');
+            $table->string('state');
             $table->timestamps();
         });
     }

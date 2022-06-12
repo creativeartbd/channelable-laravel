@@ -14,7 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('projects', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id_project');
+            $table->string('name');
+            $table->string('website');
+            $table->unsignedBigInteger('country_id')->index();
+            $table->unsignedBigInteger('currency_id')->index();
+            $table->unsignedBigInteger('timezone_id')->index();
+            $table->integer('is_selected')->default(0);
+            $table->string('token');
             $table->timestamps();
         });
     }
