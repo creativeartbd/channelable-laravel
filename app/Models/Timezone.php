@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Timezone extends Model
 {
     use HasFactory;
+    protected $table = 'timezones';
+
+    protected $primaryKey = 'id_timezone';
+
+    protected $guarded = [];
+
 }

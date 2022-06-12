@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MysqlServer extends Model
+class PasswordReset extends Model
 {
     use HasFactory;
-    protected $table = 'mysql_servers';
+    protected $table = 'password_resets';
 
-    protected $primaryKey = 'id_mysql_server';
+    public $timestamps = false;
+
     protected $guarded = [];
-
 }
