@@ -29,18 +29,14 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
-
-Route::group(['middleware' => 'jwt.verify'], function ($router) {
-    Route::post('logout', 'Auth\AuthController@logout');
+//
+//Route::group(['middleware' => 'jwt.verify'], function ($router) {
+//    Route::post('logout', 'Auth\AuthController@logout');
 //    Route::post('refresh', 'Auth\AuthController@refresh');
 //    Route::post('me', 'Auth\AuthController@me');
 //    Route::post('user/lang', 'Auth\AuthController@updateLang');
 //    Route::post('change/password', 'Auth\AuthController@changePassword');
 //    Route::post('user/update', 'Auth\AuthController@update');
-
-
-
-
-
-
-});
+//
+//
+//});

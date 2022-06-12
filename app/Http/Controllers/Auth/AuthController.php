@@ -6,23 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
+use JWTFactory;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+
+        $this->middleware('jwt.auth', ['except' => ['login','register']]);
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+        try {
+            $request->validate([
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ]);
+        }catch (ValidationException $e){
+            return response()->json($e->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
         $credentials = $request->only('email', 'password');
 
-        $token = Auth::attempt($credentials);
+        $token = JWTAuth::attempt($credentials);
+
         if (!$token) {
             return response()->json([
                 'status' => 'error',
@@ -43,19 +55,29 @@ class AuthController extends Controller
     }
 
     public function register(Request $request){
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        try {
+            $request->validate([
+                'first_name' => 'required|max:255',
+                'last_name' => 'required|max:255',
+                'email' => 'required|max:255',
+                'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
+                'password_confirmation' => 'min:6',
+            ]);
+        }catch (ValidationException $exception){
+            return response()->json($exception->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'first_name' => $request['first_name'],
+            'last_name' => $request['last_name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+            'email_verification_token' => Str::random(32)
         ]);
 
-        $token = Auth::login($user);
+        //::TODO Mail verification
+
+        $token = JWTAuth::fromUser($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
@@ -64,12 +86,12 @@ class AuthController extends Controller
                 'token' => $token,
                 'type' => 'bearer',
             ]
-        ]);
+        ], Response::HTTP_OK);
     }
 
     public function logout()
     {
-        Auth::logout();
+        JWTAuth::logout();
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',
@@ -80,7 +102,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'user' => Auth::user(),
+            'user' => JWTAuth::user(),
         ]);
     }
 
@@ -88,9 +110,9 @@ class AuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'user' => Auth::user(),
+            'user' => JWTAuth::user(),
             'authorisation' => [
-                'token' => Auth::refresh(),
+                'token' => JWTAuth::refresh(),
                 'type' => 'bearer',
             ]
         ]);
